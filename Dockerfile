@@ -28,7 +28,7 @@ RUN python -m venv /py && \
     # adds a user since it is a best practice not to use the root user
 
 # run python from the environment
-ENV PATH="py/bin:$PATH"
+ENV PATH="/py/bin:$PATH"
 
 # switch to user and everything being ran in the image is through the djang-user
 USER django-user
