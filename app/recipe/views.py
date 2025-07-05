@@ -9,6 +9,20 @@ from core.models import Recipe, Tag, Ingredient
 from recipe import serializers
 
 
+class BaseRecipeAttrViewSet(
+        mixins.UpdateModelMixin,    # for updating a tag -> GET
+        mixins.ListModelMixin,      # for getting list of tags -> PUT, PATCH
+        mixins.DestroyModelMixin,   # for deleting a tag -> DELETE
+        viewsets.GenericViewSet,
+):
+    """Base viewset for recipe attributes"""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user).order_by("-name")
+
+
 class RecipeViewSet(viewsets.ModelViewSet):
     """View for manage recipe APIs."""
     serializer_class = serializers.RecipeDetailSerializer
@@ -32,32 +46,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class TagViewSet(
-        mixins.UpdateModelMixin,    # for updating a tag -> GET
-        mixins.ListModelMixin,      # for getting list of tags -> PUT, PATCH
-        mixins.DestroyModelMixin,   # for deleting a tag -> DELETE
-        viewsets.GenericViewSet,
-    ):
+class TagViewSet(BaseRecipeAttrViewSet):
     """Manage tags in the database"""
     serializer_class = serializers.TagSerializer
     queryset = Tag.objects.all()
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by("-name")
 
 
-class IngredientViewSet(
-        mixins.ListModelMixin,
-        mixins.UpdateModelMixin,
-        mixins.DestroyModelMixin,
-        viewsets.GenericViewSet,
-    ):
+class IngredientViewSet(BaseRecipeAttrViewSet):
     serializer_class = serializers.IngredientSerializer
     queryset = Ingredient.objects.all()
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by("-name")

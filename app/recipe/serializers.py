@@ -45,7 +45,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         for tag in tags:
             tag_obj, _created = Tag.objects.get_or_create(
                 user=auth_user,
-                **tag, #equivalent to name=tag["name"]
+                **tag,  # equivalent to name=tag["name"]
             )
             recipe.tags.add(tag_obj)
 
